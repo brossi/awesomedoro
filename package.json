@@ -1,16 +1,16 @@
 {
-  "name": "bloc-frontend-project-starter",
-  "version": "0.0.2",
-  "description": "Starter project for the Bloc Frontend Web Development",
+  "name": "Awesomedoro",
+  "version": "0.0.1",
+  "description": "The only productivity tool you'll ever need, guaranteed...or your money back!",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bloc/bloc-frontend-project-starter"
+    "url": "https://github.com/brossi/awesomedoro"
   },
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "author": "Bloc Inc",
+  "author": "Ben Rossi (@brossi)",
   "license": "ISC",
   "dependencies": {
     "hapi": "^7.5.0",
@@ -24,6 +24,12 @@
     "grunt-contrib-clean": "~0.6.0",
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-hapi": "^0.8.1"
+    "grunt-hapi": "^0.8.1",
+    "grunt-karma": "^0.12.1",
+    "jasmine": "^2.4.1",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.21",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-jasmine": "^0.3.7"
   }
 }
