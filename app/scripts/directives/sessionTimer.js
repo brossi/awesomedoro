@@ -8,6 +8,7 @@
    * # sessionTimer
    */
   var sessionTimer = function sessionTimer($interval) {
+    var timerDuration = 1500;
     return {
       templateUrl: '/templates/directives/session_timer.html',
       replace: true,
@@ -17,7 +18,7 @@
         // initialize timer object
         scope.Timer = null;
         // intialize message object
-        var currentTime = 1500;
+        var currentTime = timerDuration;
         scope.Countdown = currentTime;
         
         // start timer function
@@ -32,9 +33,12 @@
         // stop timer function
         scope.StopTimer = function() {
           scope.Countdown = 'Timer stopped.';
-          // cancel the timer
+          // cancel the timer and reset the value
           if (angular.isDefined(scope.Timer)) {
             $interval.cancel(scope.Timer);
+            console.log(timerDuration);
+            currentTime = timerDuration;
+            scope.Countdown = timerDuration;
           }
         }
       }
