@@ -1,6 +1,6 @@
 <div>
   <div ng-bind="Countdown">{{ home.sessionTimer.Countdown |timecode }}</div>
   <br />
-  <input type="button" value="Start Timer" ng-click="StartTimer()" />
-  <input type="button" value="Stop Timer" ng-click="StopTimer()" />
+  <input type="button" value="Start Timer" ng-click="StartTimer()" ng-show="btnVisible" />
+  <input type="button" value="Reset Timer" ng-click="StopTimer()" ng-show="!btnVisible" />
 </div>
