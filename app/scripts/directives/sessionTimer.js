@@ -10,7 +10,7 @@
   var sessionTimer = function sessionTimer($interval) {
     // initialize duration of timer
     // this should be turn into a variable, eventually
-    var timerDuration = 1500;
+    var timerDuration = 10;
 
     return {
       templateUrl: '/templates/directives/session_timer.html',
@@ -33,6 +33,11 @@
           scope.Timer = $interval(function() {
             currentTime--;
             scope.Countdown = currentTime;
+
+            // when the timer reaches zero, stop the countdown
+            if (currentTime === 0) {
+              $interval.cancel(scope.Timer);
+            }
           }, 1000);
           // toggle button state from "start" to "reset"
           scope.btnVisible = false;
@@ -40,13 +45,12 @@
 
         // stop timer function
         scope.StopTimer = function() {
-          scope.Countdown = 'Timer stopped.';
           // cancel the timer and reset the value
           if (angular.isDefined(scope.Timer)) {
             $interval.cancel(scope.Timer);
             currentTime = timerDuration;
             scope.Countdown = timerDuration;
-            
+
             // reset button state from "reset" to "start"
             scope.btnVisible = true;
           }
