@@ -10,12 +10,15 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine-jquery', 'jasmine'],
 
 
     // list of files / patterns to load in the browser
     files: [
+      // using angular from cdn
+      'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js',
       '../../app/**/*.js',
+      '../../app/**/*.html',
       '../**/*[sS]pec.js'
     ],
 
@@ -28,6 +31,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+        '**/*.html': ['ng-html2js']
     },
 
 
@@ -47,7 +51,7 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_DEBUG,
 
 
     // enable / disable watching file and executing tests whenever any file changes
@@ -65,6 +69,7 @@ module.exports = function(config) {
 
     // Concurrency level
     // how many browser should be started simultaneous
-    concurrency: Infinity
+    concurrency: Infinity,
+    
   })
 }
