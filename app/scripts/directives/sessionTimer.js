@@ -7,20 +7,22 @@
    * @description
    * # sessionTimer
    */
-  var sessionTimer = function sessionTimer($interval) {
-    // initialize duration of timer
-    // this should be turn into a variable, eventually
-    var timerDuration = 10;
+  var sessionTimer = function sessionTimer($rootScope, $interval) {
 
     return {
       templateUrl: '/templates/directives/session_timer.html',
       replace: true,
       restrict: 'E',
-      scope: {},
+      scope: {
+        duration: '='
+      },
       link: function(scope, element, attributes) {
+        // initialize timer duration
+        var timerDuration = scope.duration || 25;
+        var timerDuration = timerDuration * 60;
         // initialize timer object
         scope.Timer = null;
-        // intialize message object
+        // intialize countdown object
         var currentTime = timerDuration;
         scope.Countdown = currentTime;
 
@@ -37,6 +39,8 @@
             // when the timer reaches zero, stop the countdown
             if (currentTime === 0) {
               $interval.cancel(scope.Timer);
+              // broadcast the state change
+              $rootScope.$broadcast('timerfinished');
             }
           }, 1000);
           // toggle button state from "start" to "reset"
@@ -45,8 +49,10 @@
 
         // stop timer function
         scope.StopTimer = function() {
-          // cancel the timer and reset the value
+        
           if (angular.isDefined(scope.Timer)) {
+
+            // cancel the timer and reset the value to the original duration
             $interval.cancel(scope.Timer);
             currentTime = timerDuration;
             scope.Countdown = timerDuration;
@@ -60,5 +66,5 @@
   };
   angular
       .module('aDoro')
-      .directive('sessionTimer', ['$interval', sessionTimer])
+      .directive('sessionTimer', ['$rootScope', '$interval', sessionTimer])
 })();
