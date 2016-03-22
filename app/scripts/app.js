@@ -16,5 +16,10 @@
   
   angular
     .module('aDoro', ['ui.router', 'firebase'])
-    .config(config);
+    .config(config)
+    .constant('appConstants', {
+      // timer durations (in minutes)
+      WORK_SESSION: 25,
+      BREAK_SESSION: 5
+    });
 })();
