@@ -1,6 +1,6 @@
 <div>
-  <span>{{ Countdown | timecode }}</span>
+  <span>{{ TimerType }}: {{ Countdown | timecode }}</span>
   <br />
-  <input type="button" value="Start a Work Session" ng-click="StartTimer()" ng-show="btnVisible" />
-  <input type="button" value="Reset Timer" ng-click="StopTimer()" ng-show="!btnVisible" />
+  <input type="button" value="Start" ng-click="StartTimer()" ng-show="btnVisible" />
+  <input type="button" value="Reset" ng-click="ResetTimer()" ng-show="!btnVisible" />
 </div>
