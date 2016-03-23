@@ -1,9 +1,9 @@
 (function() {
-  var HomeCtrl = function HomeCtrl($scope) {
+  var HomeCtrl = function HomeCtrl() {
     
   };
   
   angular
     .module('aDoro')
-    .controller('HomeCtrl', '$scope', HomeCtrl);
+    .controller('HomeCtrl', HomeCtrl);
 })();
