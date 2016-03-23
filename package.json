@@ -1,6 +1,6 @@
 {
   "name": "Awesomedoro",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The only productivity tool you'll ever need, guaranteed...or your money back!",
   "repository": {
     "type": "git",
@@ -26,14 +26,12 @@
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-hapi": "^0.8.1",
-    "grunt-html2js": "^0.3.5",
     "grunt-karma": "^0.12.1",
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.21",
     "karma-chrome-launcher": "^0.2.2",
     "karma-jasmine": "^0.3.7",
-    "karma-jasmine-jquery": "^0.1.1",
-    "karma-ng-html2js-preprocessor": "^0.2.1"
+    "karma-jasmine-jquery": "^0.1.1"
   }
 }
