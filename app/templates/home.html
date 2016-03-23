@@ -1,3 +1,30 @@
-<div data-ng-controller="HomeCtrl as home" ng-init="initializeWork()">
-  <session-timer duration="{{ duration }}" type="{{ timerType }}"></session-timer>
+<md-toolbar layout="row">
+    <div class="md-toolbar-tools">
+      <span>Awesomedoro!</span>
+      <!-- fill up the space between left and right area -->
+      <span flex></span>
+      <md-button>
+        {AUTH}
+      </md-button>
+    </div>
+  </md-toolbar>
+
+<div flex layout="row">
+  
+  <md-sidenav flex="50" md-is-locked-open="true" class="">
+    <md-list>
+      <md-list-item class="md-2-line">
+      <md-checkbox></md-checkbox>
+      <div class="md-list-item-text">
+        <h3>Title</h3>
+        <p>Description</p>
+      </div>
+    </md-list-item>
+    </md-list>
+  </md-sidenav>
+
+  <md-content flex="50" data-ng-controller="HomeCtrl as home" ng-init="initializeWork()">
+    <session-timer duration="{{ duration }}" type="{{ timerType }}"></session-timer>
+  </md-content>
+
 </div>
