@@ -18,22 +18,26 @@
         type: '@'
       },
       link: function(scope, element, attributes) {
+        var timerDuration, currentTime;
 
-        // initialize timer object and type
-        scope.Timer = null;
-        scope.TimerType = scope.type;
+        scope.initialize = function initialize() {
+          // initialize timer object and type
+          scope.Timer = null;
+          scope.TimerType = scope.type;
 
-        // initialize timer duration, falling back if not defined and then convert from minutes to seconds
-        var timerDuration = scope.duration || appConstants.WORK_SESSION;
-        timerDuration = timerDuration * 60;
+          // initialize timer duration, falling back if not defined and then convert from minutes to seconds
+          timerDuration = scope.duration || appConstants.WORK_SESSION;
+          timerDuration = timerDuration * 60;
 
-        // intialize countdown object
-        var currentTime = timerDuration;
-        scope.Countdown = currentTime;
+          // intialize countdown object
+          currentTime = timerDuration;
+          scope.Countdown = currentTime;
 
-        // initialize button state and handle toggle
-        scope.btnVisible = true;
-        
+          // initialize button state and handle toggle
+          scope.btnVisible = true;
+        };
+        scope.initialize();
+
         // start timer function
         scope.StartTimer = function() {
           // initialize the timer to run every 1000 milliseconds (1 second tick)
@@ -60,16 +64,7 @@
             $interval.cancel(scope.Timer);
 
             // initialize timer type and duration, falling back if not defined and then convert from minutes to seconds
-            scope.TimerType = scope.type;
-            timerDuration = scope.duration;
-            timerDuration = timerDuration * 60;
-
-            // intialize countdown object
-            currentTime = timerDuration;
-            scope.Countdown = currentTime;
-
-            // initialize button state and handle toggle
-            scope.btnVisible = true;
+            scope.initialize();
           }
         }
 

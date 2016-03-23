@@ -9,7 +9,6 @@
     $stateProvider
       .state('home', {
         url: '/',
-        controller: 'HomeCtrl as home',
         templateUrl: '/templates/home.html'
       })
   };
@@ -20,6 +19,7 @@
     .constant('appConstants', {
       // timer durations (in minutes)
       WORK_SESSION: 25,
-      BREAK_SESSION: 5
+      BREAK_SESSION: 5,
+      LONG_BREAK_SESSION: 30
     });
 })();
