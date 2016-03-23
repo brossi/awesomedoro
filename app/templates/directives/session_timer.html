@@ -1,6 +1,6 @@
 <div>
-  <span>{{ TimerType }}: {{ Countdown | timecode }}</span>
-  <br />
+  <h2 class="md-display-3">{{ Countdown | timecode }}</h2>
+  <p>{{ TimerType }}</p>
   <input type="button" value="Start" ng-click="StartTimer()" ng-show="btnVisible" />
   <input type="button" value="Reset" ng-click="ResetTimer()" ng-show="!btnVisible" />
 </div>

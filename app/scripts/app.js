@@ -14,7 +14,7 @@
   };
   
   angular
-    .module('aDoro', ['ui.router', 'firebase'])
+    .module('aDoro', ['ui.router', 'firebase', 'ngMaterial'])
     .config(config)
     .constant('appConstants', {
       // timer durations (in minutes)

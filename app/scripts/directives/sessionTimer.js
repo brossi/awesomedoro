@@ -20,6 +20,14 @@
       link: function(scope, element, attributes) {
         var timerDuration, currentTime;
 
+          // sound effect for completed session
+          var completionSound = new buzz.sound(
+            '/assets/sounds/two-bells-ship-time', {
+              formats: ['mp3'],
+              preload: true,
+              volume: 40
+            });
+
         scope.initialize = function initialize() {
           // initialize timer object and type
           scope.Timer = null;
@@ -48,6 +56,8 @@
             // when the timer reaches zero, stop the countdown
             if (currentTime === 0) {
               $interval.cancel(scope.Timer);
+              // announce the end of the session with a sound
+              completionSound.play().fadeOut(4000);
               // broadcast the state change
               $rootScope.$broadcast('timerfinished:' + scope.TimerType);
             }
