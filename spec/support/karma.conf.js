@@ -16,7 +16,18 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       // using angular from cdn
-      'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js',
+      'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js',
+      'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js',
+      'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js',
+      'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js',
+      'http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js',
+      'https://cdn.firebase.com/js/client/2.3.2/firebase.js',
+      'https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.13/angular-ui-router.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/buzz/1.1.0/buzz.min.js',
+      '../../node_modules/angular-route/angular-route.js',
+      '../../node_modules/angular-mocks/angular-mocks.js',
+      '../../app/scripts/app.js',
       '../../app/**/*.js',
       '../../app/**/*.html',
       '../**/*[sS]pec.js'
