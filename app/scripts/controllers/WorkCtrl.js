@@ -4,16 +4,38 @@
     // keep track of the number of work sessions completed
     var workSessionsCompleted = 0;
 
+    // keep track of the work sessions and if they've been paused
+    var workSessions = [];
+    var previousSession;
+
+    // work session object for keeping track of what is done
+    var WorkSession = function WorkSession(id, timesPaused, durationPaused) {
+      this.id = id || workSessionsCompleted + 1;
+      this.timestamp = Math.floor(new Date() / 1000); // unix epoch (in seconds)
+      this.paused = timesPaused || 0;
+      this.duration_paused = durationPaused || 0;
+      this.completed = false;
+      this.tasks = {};
+    }; 
+
     $scope.initializeWork = function initializeWork() {
       //$scope.duration = appConstants.WORK_SESSION;
       $scope.duration = .1; //DEBUG
       $scope.timerType = 'work';
       $scope.showPause = true;
+
+      var currentSession = new WorkSession();
+      workSessions.push(currentSession);
+      previousSession = currentSession;
+
+      //DEBUG
+      var count = currentSession.id;
+      console.log(workSessions[count - 1]);
     };
 
     var finishWorkSession = function finishWorkSession() {
       workSessionsCompleted++;
-      console.log('workSessionsCompleted: ' + workSessionsCompleted);
+      previousSession.completed = true;
       initializeBreak();
     };
 
