@@ -101,6 +101,9 @@
               currentPauseTime++;
               scope.Countdown = currentPauseTime;
 
+              // broadcast the information from the paused session
+              $rootScope.$broadcast('sessionPause');
+
             }, 1000);
           }
         }
@@ -109,6 +112,7 @@
         scope.ResumePreviousTimer = function() {
 
           if (angular.isDefined(scope.Timer)) {
+
             // cancel the timer and reset the value to the original duration
             $interval.cancel(scope.Timer);
 

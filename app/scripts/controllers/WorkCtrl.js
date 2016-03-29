@@ -55,10 +55,15 @@
       }
     };
 
+    var sessionPause = function sessionPause() {
+      console.log('Session pause fired');
+    };
+
     // watch for notifications from the timer
     $rootScope.$on('timerfinished:work', finishWorkSession);
     $rootScope.$on('timerfinished:break', $scope.initializeWork);
     $rootScope.$on('timerfinished:longbreak', $scope.initializeWork);
+    $rootScope.$on('sessionPause', $scope.sessionPause);
   };
   
   angular
