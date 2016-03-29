@@ -41,7 +41,6 @@
 
           // intialize countdown object, but first check to make sure that there hasn't been a previously saved 
           lastCurrentTime > 0 ? (currentTime=lastCurrentTime) : (currentTime=timerDuration);
-          //currentTime = timerDuration;
           scope.Countdown = currentTime;
 
           // initialize button state and handle toggle
