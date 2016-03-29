@@ -7,7 +7,7 @@
    * @description
    * # sessionTimer
    */
-  var sessionTimer = function sessionTimer($rootScope, $interval, appConstants) {
+  var sessionTimer = function sessionTimer($rootScope, $interval, appConstants, $filter) {
 
     return {
       templateUrl: '/templates/directives/session_timer.html',
@@ -15,36 +15,42 @@
       restrict: 'E',
       scope: {
         duration: '@',
-        type: '@'
+        type: '@',
+        pause: '@'
       },
       link: function(scope, element, attributes) {
-        var timerDuration, currentTime;
+        var timerDuration, currentTime, lastCurrentTime, lastTimerType, currentPauseTime, showPause;
 
-          // sound effect for completed session
-          var completionSound = new buzz.sound(
-            '/assets/sounds/two-bells-ship-time', {
-              formats: ['mp3'],
-              preload: true,
-              volume: 40
-            });
+        // sound effect for completed session
+        var completionSound = new buzz.sound(
+          '/assets/sounds/two-bells-ship-time', {
+            formats: ['mp3'],
+            preload: true,
+            volume: 40
+          });
 
-        scope.initialize = function initialize() {
+        scope.Initialize = function() {
           // initialize timer object and type
           scope.Timer = null;
           scope.TimerType = scope.type;
+          scope.ShowPause = scope.pause;
 
           // initialize timer duration, falling back if not defined and then convert from minutes to seconds
           timerDuration = scope.duration || appConstants.WORK_SESSION;
           timerDuration = timerDuration * 60;
 
-          // intialize countdown object
-          currentTime = timerDuration;
+          // intialize countdown object, but first check to make sure that there hasn't been a previously saved 
+          lastCurrentTime > 0 ? (currentTime=lastCurrentTime) : (currentTime=timerDuration);
+          //currentTime = timerDuration;
           scope.Countdown = currentTime;
 
           // initialize button state and handle toggle
           scope.btnVisible = true;
+          // toggle visibility on the "pause" button to hide it, if visible from a previous run
+          scope.timerRunning = false;
+
         };
-        scope.initialize();
+        scope.Initialize();
 
         // start timer function
         scope.StartTimer = function() {
@@ -57,13 +63,68 @@
             if (currentTime === 0) {
               $interval.cancel(scope.Timer);
               // announce the end of the session with a sound
-              completionSound.play().fadeOut(4000);
+              completionSound.play();
               // broadcast the state change
               $rootScope.$broadcast('timerfinished:' + scope.TimerType);
             }
           }, 1000);
           // toggle button state from "start" to "reset"
           scope.btnVisible = false;
+          // toggle visibility on the "pause" button to show it if allowed by session type
+          if (scope.ShowPause === 'true') {
+            scope.timerRunning = true;
+          }
+        }
+
+        // pause timer function and keep track of state
+        scope.StartPauseTimer = function() {
+    
+          if (angular.isDefined(scope.Timer)) {
+            // cancel current timer and store off the values for use when resuming
+            $interval.cancel(scope.Timer);
+            // hide the pause button
+            scope.timerRunning = false;
+
+            lastCurrentTime = currentTime; // pass back into scope.duration, later
+            lastTimerType = scope.TimerType; // store for returning to the same state later
+
+            // start countup timer for how long the pause has lasted
+            currentPauseTime = 0;
+            // set timer in template to 00:00 to start counting up
+            scope.Countdown = 0;
+            // show the resume button and hide the reset button
+            scope.pauseTimerRunning = true;
+            // set the new display for timer type
+            scope.TimerType = lastTimerType + ' session paused. ' + $filter('timecode')(lastCurrentTime) + 
+            ' remaining.';
+
+            scope.Timer = $interval(function() {
+              currentPauseTime++;
+              scope.Countdown = currentPauseTime;
+
+            }, 1000);
+          }
+        }
+
+        // resume session from break
+        scope.ResumePreviousTimer = function() {
+
+          if (angular.isDefined(scope.Timer)) {
+            // cancel the timer and reset the value to the original duration
+            $interval.cancel(scope.Timer);
+
+            // reinitialize timer type and duration, using previously stored values
+            currentTime = lastCurrentTime;
+            scope.TimerType = lastTimerType;
+            scope.Initialize();
+
+            // hide resume button
+            scope.pauseTimerRunning = false;
+
+            // start timer
+            scope.StartTimer();
+
+          }
         }
 
         // stop timer function
@@ -74,7 +135,7 @@
             $interval.cancel(scope.Timer);
 
             // initialize timer type and duration, falling back if not defined and then convert from minutes to seconds
-            scope.initialize();
+            scope.Initialize();
           }
         }
 
@@ -88,5 +149,5 @@
   };
   angular
       .module('aDoro')
-      .directive('sessionTimer', ['$rootScope', '$interval', 'appConstants', sessionTimer])
+      .directive('sessionTimer', ['$rootScope', '$interval', 'appConstants', '$filter', sessionTimer])
 })();

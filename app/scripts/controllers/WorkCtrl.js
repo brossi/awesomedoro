@@ -8,6 +8,7 @@
       //$scope.duration = appConstants.WORK_SESSION;
       $scope.duration = .1; //DEBUG
       $scope.timerType = 'work';
+      $scope.showPause = true;
     };
 
     var finishWorkSession = function finishWorkSession() {
@@ -23,10 +24,12 @@
         //$scope.duration = appConstants.LONG_BREAK_SESSION;
         $scope.duration = .15; //DEBUG
         $scope.timerType = 'longbreak';
+        $scope.showPause = false;
       } else {
         //$scope.duration = appConstants.BREAK_SESSION;
         $scope.duration = .05; //DEBUG
         $scope.timerType = 'break';
+        $scope.showPause = false;
       }
     };
 
@@ -34,7 +37,6 @@
     $rootScope.$on('timerfinished:work', finishWorkSession);
     $rootScope.$on('timerfinished:break', $scope.initializeWork);
     $rootScope.$on('timerfinished:longbreak', $scope.initializeWork);
-
   };
   
   angular
