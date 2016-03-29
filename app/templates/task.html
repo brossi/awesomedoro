@@ -5,9 +5,9 @@
   </form>
   <md-list>
     <md-list-item class="md-2-line" ng-repeat="message in messages">
-    <md-checkbox></md-checkbox>
+    <md-checkbox aria-label="task completed?"></md-checkbox>
     <div class="md-list-item-text">
-      <input ng-model="message.text" ng-change="messages.$save(message)" />
+      <input ng-model="message.text" ng-change="messages.$save(message)" aria-label="task name"/>
       <button ng-click="messages.$remove(message)">Delete Message</button>
     </div>
   </md-list-item>
