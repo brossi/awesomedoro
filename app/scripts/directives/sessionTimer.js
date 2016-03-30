@@ -53,6 +53,7 @@
 
         // start timer function
         scope.StartTimer = function() {
+          $rootScope.$broadcast('TIMER_STARTED:' + scope.TimerType);
           // initialize the timer to run every 1000 milliseconds (1 second tick)
           scope.Timer = $interval(function() {
             currentTime--;
@@ -64,7 +65,7 @@
               // announce the end of the session with a sound
               completionSound.play();
               // broadcast the state change
-              $rootScope.$broadcast('timerfinished:' + scope.TimerType);
+              $rootScope.$broadcast('TIMER_FINISHED:' + scope.TimerType);
             }
           }, 1000);
           // toggle button state from "start" to "reset"
@@ -97,12 +98,15 @@
             scope.TimerType = lastTimerType + ' session paused. ' + $filter('timecode')(lastCurrentTime) + 
             ' remaining.';
 
+            // single notification that the session is being paused to capture a count
+            $rootScope.$emit('PAUSE_TRIGGERED');
+
             scope.Timer = $interval(function() {
               currentPauseTime++;
               scope.Countdown = currentPauseTime;
 
-              // broadcast the information from the paused session
-              $rootScope.$broadcast('sessionPause');
+              // broadcast the length information from the paused session
+              $rootScope.$emit('SESSION_PAUSED', { length : currentPauseTime });
 
             }, 1000);
           }
@@ -113,6 +117,7 @@
 
           if (angular.isDefined(scope.Timer)) {
 
+            $rootScope.$emit('PAUSE_FINISHED');
             // cancel the timer and reset the value to the original duration
             $interval.cancel(scope.Timer);
 
