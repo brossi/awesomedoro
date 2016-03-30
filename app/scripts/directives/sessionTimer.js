@@ -70,6 +70,11 @@
               completionSound.play();
               // broadcast the state change
               $rootScope.$emit('TIMER_FINISHED:' + scope.TimerType);
+              // reset timer to default state
+              scope.duration = null;
+              lastCurrentTime = 0;
+
+              scope.Initialize();
             }
           }, 1000);
           // toggle button state from "start" to "reset"
@@ -148,7 +153,8 @@
         // watch for changes and update the timer as needed
         scope.$watch('duration', function(newVal, oldVal) {
           // pass new values to set up new timer state
-          scope.ResetTimer();
+          //scope.ResetTimer();
+          scope.Initialize();
         });
       }
     };
