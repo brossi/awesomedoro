@@ -1,22 +1,18 @@
 (function() {
   var WorkCtrl = function WorkCtrl($rootScope, $scope, appConstants) {
 
-    // keep track of the number of work sessions completed
-    var workSessionsCompleted = 0;
+    var sessions = [];
+    var tempSession = {};
+    var workCompleted = 0;
+    var pauseStart, pauseEnd;
+    var sessionPauseCount = 0;
+    var sessionPauseLength = 0;
+    var totalPauseLength = 0;
 
-    // keep track of the work sessions and if they've been paused
-    var workSessions = [];
-    var currentWorkSession, sessionPauseCount = 0, sessionPauseLength = 0, totalPauseLength = 0;
-
-    // work session object for keeping track of what is done
-    var WorkSession = function WorkSession(id, timesPaused, durationPaused) {
-      this.id = id || workSessionsCompleted + 1;
-      this.timestamp = Math.floor(new Date() / 1000); // unix epoch (in seconds)
-      this.pause_count = timesPaused || 0;
-      this.total_pause_length = durationPaused || 0;
-      this.completed = false;
-      this.tasks = {};
-    }; 
+    var getUnixTimestamp = function getUnixTimestamp() {
+      // generate a unix epoch timestamp (in seconds)
+      return Math.floor(new Date() / 1000);
+    }
 
     $scope.initializeWork = function initializeWork() {
       //$scope.duration = appConstants.WORK_SESSION;
@@ -26,39 +22,50 @@
     };
 
     var beginWorkSession = function beginWorkSession() {
+      console.log('beginWorkSession');
       // capture the work session in a new object 
-      currentWorkSession = new WorkSession();
-      workSessions.push(currentWorkSession);
+      tempSession.id = workCompleted + 1;
+      tempSession.timestamp = getUnixTimestamp();
+      tempSession.pause_count = 0;
+      tempSession.total_pause_length = 0;
+      tempSession.tasks = {};
+      tempSession.completed = false;
+      console.log(tempSession);
     };
 
-    // record if the user pauses their work session
-    var countPauses = function countPauses() {
-      sessionPauseCount++;
+    var startSessionPause = function startSessionPause() {
+      console.log('startSessionPause');
+      pauseStart = getUnixTimestamp();
+      console.log(pauseStart);
     };
-    var monitorSessionPause = function monitorSessionPause(event, data) {
-      var length = data.length;
-      sessionPauseLength = length;
+
+    var calcPauseLength = function calcPauseLength(pauseStart, pauseEnd) {
+      // accept start timestamp and end timestamp and return the difference
+      return (pauseEnd - pauseStart);
     };
+
     var finishSessionPause = function finishSessionPause() {
+      console.log('finishSessionPause');
+      pauseEnd = getUnixTimestamp();
+      sessionPauseCount++;
+      sessionPauseLength = calcPauseLength(pauseStart, pauseEnd);
       totalPauseLength += sessionPauseLength;
-      // add this pause event to the session's total
-      currentWorkSession.pause_count = sessionPauseCount;
-      currentWorkSession.total_pause_length = totalPauseLength;
- 
+      tempSession.pause_count = sessionPauseCount;
+      tempSession.total_pause_length = totalPauseLength;
+      //console.log(tempSession);
     };
 
-    // actions to take after a work session has been successfully completed
     var finishWorkSession = function finishWorkSession() {
-      workSessionsCompleted++;
-      currentWorkSession.completed = true;
-
-      // clean up and start a break
+      console.log('finishWorkSession');
+      workCompleted++;
+      tempSession.completed = true;
+      console.log(tempSession);
       initializeBreak();
     };
 
     var initializeBreak = function initializeBreak() {
       // check if it's time to give a long break (after multiples of 4 completed work sessions)
-      if (workSessionsCompleted % 4 === 0) {
+      if (workCompleted % 4 === 0) {
         //$scope.duration = appConstants.LONG_BREAK_SESSION;
         $scope.duration = .15; //DEBUG
         $scope.timerType = 'longbreak';
@@ -73,12 +80,12 @@
 
     // watch for notifications from the timer
     $rootScope.$on('TIMER_STARTED:work', beginWorkSession);
+    $rootScope.$on('PAUSE_TRIGGERED', startSessionPause);
+    $rootScope.$on('PAUSE_FINISHED', finishSessionPause);
     $rootScope.$on('TIMER_FINISHED:work', finishWorkSession);
     $rootScope.$on('TIMER_FINISHED:break', $scope.initializeWork);
     $rootScope.$on('TIMER_FINISHED:longbreak', $scope.initializeWork);
-    $rootScope.$on('PAUSE_TRIGGERED', countPauses);
-    $rootScope.$on('SESSION_PAUSED', monitorSessionPause);
-    $rootScope.$on('PAUSE_FINISHED', finishSessionPause);
+
   };
   
   angular

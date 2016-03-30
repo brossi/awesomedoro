@@ -19,7 +19,7 @@
         pause: '@'
       },
       link: function(scope, element, attributes) {
-        var timerDuration, currentTime, lastCurrentTime, lastTimerType, currentPauseTime, showPause;
+        var timerDuration, currentTime, lastCurrentTime, lastTimerType, currentPauseTime, showPause, status;
 
         // sound effect for completed session
         var completionSound = new buzz.sound(
@@ -52,8 +52,12 @@
         scope.Initialize();
 
         // start timer function
-        scope.StartTimer = function() {
-          $rootScope.$broadcast('TIMER_STARTED:' + scope.TimerType);
+        scope.StartTimer = function(status) {
+          // only broadcast notification if this is the start of a session;
+          // used to prevent the timer from triggering a new object after a pause
+          if (!status) {
+            $rootScope.$emit('TIMER_STARTED:' + scope.TimerType);
+          }
           // initialize the timer to run every 1000 milliseconds (1 second tick)
           scope.Timer = $interval(function() {
             currentTime--;
@@ -65,7 +69,7 @@
               // announce the end of the session with a sound
               completionSound.play();
               // broadcast the state change
-              $rootScope.$broadcast('TIMER_FINISHED:' + scope.TimerType);
+              $rootScope.$emit('TIMER_FINISHED:' + scope.TimerType);
             }
           }, 1000);
           // toggle button state from "start" to "reset"
@@ -78,8 +82,8 @@
 
         // pause timer function and keep track of state
         scope.StartPauseTimer = function() {
-    
           if (angular.isDefined(scope.Timer)) {
+            
             // cancel current timer and store off the values for use when resuming
             $interval.cancel(scope.Timer);
             // hide the pause button
@@ -98,29 +102,23 @@
             scope.TimerType = lastTimerType + ' session paused. ' + $filter('timecode')(lastCurrentTime) + 
             ' remaining.';
 
-            // single notification that the session is being paused to capture a count
+            // single notification that the session is being paused to trigger external functions
             $rootScope.$emit('PAUSE_TRIGGERED');
 
             scope.Timer = $interval(function() {
               currentPauseTime++;
               scope.Countdown = currentPauseTime;
-
-              // broadcast the length information from the paused session
-              $rootScope.$emit('SESSION_PAUSED', { length : currentPauseTime });
-
             }, 1000);
           }
         }
 
-        // resume session from break
+        // resume work session from 'paused' state
         scope.ResumePreviousTimer = function() {
-
           if (angular.isDefined(scope.Timer)) {
 
             $rootScope.$emit('PAUSE_FINISHED');
             // cancel the timer and reset the value to the original duration
             $interval.cancel(scope.Timer);
-
             // reinitialize timer type and duration, using previously stored values
             currentTime = lastCurrentTime;
             scope.TimerType = lastTimerType;
@@ -130,14 +128,14 @@
             scope.pauseTimerRunning = false;
 
             // start timer
-            scope.StartTimer();
+            status = 'fromPause';
+            scope.StartTimer(status);
 
           }
         }
 
         // stop timer function
         scope.ResetTimer = function() {
-        
           if (angular.isDefined(scope.Timer)) {
             // cancel the timer and reset the value to the original duration
             $interval.cancel(scope.Timer);
