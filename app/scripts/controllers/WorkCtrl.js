@@ -2,17 +2,22 @@
   var WorkCtrl = function WorkCtrl($rootScope, $scope, appConstants) {
 
     var sessions = [];
-    var TMPSession = {};
+    var TMPSession, sessionPauseCount, sessionPauseLength, totalPauseLength;
     var workCompleted = 0;
     var eventStart, eventEnd;
-    var sessionPauseCount = 0;
-    var sessionPauseLength = 0;
-    var totalPauseLength = 0;
 
     var getUnixTimestamp = function getUnixTimestamp() {
       // generate a unix epoch timestamp (in seconds)
       return Math.floor(new Date() / 1000);
     }
+
+    var cleanTMPSession = function cleanTMPSession() {
+      // ensure global objects begin from a clean state
+      TMPSession = {};
+      sessionPauseCount = 0;
+      sessionPauseLength = 0;
+      totalPauseLength = 0;
+    };
 
     $scope.initializeWork = function initializeWork() {
       //$scope.duration = appConstants.WORK_SESSION;
@@ -23,7 +28,9 @@
 
     var beginWorkSession = function beginWorkSession() {
       // console.log('beginWorkSession'); //DEBUG
-      // capture the work session in a temporary object that we'll clear after the work session is completed 
+      // ensure we're starting from a clean session state
+      cleanTMPSession();
+      // capture the work session in a temporary object that we'll clear
       TMPSession.id = workCompleted + 1;
       TMPSession.started_at = getUnixTimestamp();
       TMPSession.pause_count = 0;
@@ -62,12 +69,10 @@
       // push the work session into the sessions array
       sessions.push(TMPSession);
       $scope.sessions = sessions; //DEBUG
-      // clean up global objects and make them available for the next time they need to be used
-      sessionPauseCount = null;
-      totalPauseLength = null;
-      TMPSession = {};
       // increment the global counter
       workCompleted++;
+      // clean up the temporary session object and globals
+      cleanTMPSession();
       // set up for the next session, a break
       initializeBreak();
     };
