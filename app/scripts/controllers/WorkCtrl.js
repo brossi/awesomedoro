@@ -2,9 +2,9 @@
   var WorkCtrl = function WorkCtrl($rootScope, $scope, appConstants) {
 
     var sessions = [];
-    var tempSession = {};
+    var TMPSession = {};
     var workCompleted = 0;
-    var pauseStart, pauseEnd;
+    var eventStart, eventEnd;
     var sessionPauseCount = 0;
     var sessionPauseLength = 0;
     var totalPauseLength = 0;
@@ -16,50 +16,59 @@
 
     $scope.initializeWork = function initializeWork() {
       //$scope.duration = appConstants.WORK_SESSION;
-      $scope.duration = .1; //DEBUG
+      $scope.duration = .2; //DEBUG
       $scope.timerType = 'work';
       $scope.showPause = true;
     };
 
     var beginWorkSession = function beginWorkSession() {
-      console.log('beginWorkSession');
-      // capture the work session in a new object 
-      tempSession.id = workCompleted + 1;
-      tempSession.timestamp = getUnixTimestamp();
-      tempSession.pause_count = 0;
-      tempSession.total_pause_length = 0;
-      tempSession.tasks = {};
-      tempSession.completed = false;
-      console.log(tempSession);
+      // console.log('beginWorkSession'); //DEBUG
+      // capture the work session in a temporary object that we'll clear after the work session is completed 
+      TMPSession.id = workCompleted + 1;
+      TMPSession.started_at = getUnixTimestamp();
+      TMPSession.pause_count = 0;
+      TMPSession.total_pause_length = 0;
+      TMPSession.completed = false;
+      TMPSession.tasks = {};
     };
 
     var startSessionPause = function startSessionPause() {
-      console.log('startSessionPause');
-      pauseStart = getUnixTimestamp();
-      console.log(pauseStart);
+      // console.log('startSessionPause'); //DEBUG
+      // capture the timestamp for the start of a work session "pause"
+      eventStart = getUnixTimestamp();
     };
 
-    var calcPauseLength = function calcPauseLength(pauseStart, pauseEnd) {
+    var calcTimeDifference = function calcTimeDifference(eventStart, eventEnd) {
       // accept start timestamp and end timestamp and return the difference
-      return (pauseEnd - pauseStart);
+      return (eventEnd - eventStart);
     };
 
     var finishSessionPause = function finishSessionPause() {
-      console.log('finishSessionPause');
-      pauseEnd = getUnixTimestamp();
+      // console.log('finishSessionPause'); //DEBUG
+      eventEnd = getUnixTimestamp();
+      // increment the session counter and length with new values from the recent pause
       sessionPauseCount++;
-      sessionPauseLength = calcPauseLength(pauseStart, pauseEnd);
+      sessionPauseLength = calcTimeDifference(eventStart, eventEnd);
       totalPauseLength += sessionPauseLength;
-      tempSession.pause_count = sessionPauseCount;
-      tempSession.total_pause_length = totalPauseLength;
-      //console.log(tempSession);
+      TMPSession.pause_count = sessionPauseCount;
+      TMPSession.total_pause_length = totalPauseLength;
     };
 
     var finishWorkSession = function finishWorkSession() {
-      console.log('finishWorkSession');
+      // console.log('finishWorkSession'); //DEBUG
+      // mark the session as complete to confirm that the record was captured correctly
+      TMPSession.completed = true;
+      TMPSession.completed_at = getUnixTimestamp();
+      // push the work session into the sessions array
+      sessions.push(TMPSession);
+      $scope.sessions = sessions; //DEBUG
+      // clean up global objects and make them available for the next time they need to be used
+      sessionPauseCount = null;
+      totalPauseLength = null;
+      TMPSession = {};
+      // increment the global counter
       workCompleted++;
-      tempSession.completed = true;
-      console.log(tempSession);
+      // set up for the next session, a break
       initializeBreak();
     };
 
@@ -78,7 +87,7 @@
       }
     };
 
-    // watch for notifications from the timer
+    // Listen for event notifications from the `sessionTimer` directive
     $rootScope.$on('TIMER_STARTED:work', beginWorkSession);
     $rootScope.$on('PAUSE_TRIGGERED', startSessionPause);
     $rootScope.$on('PAUSE_FINISHED', finishSessionPause);
