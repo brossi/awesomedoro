@@ -35,7 +35,6 @@
       TMPSession.started_at = getUnixTimestamp();
       TMPSession.pause_count = 0;
       TMPSession.total_pause_length = 0;
-      TMPSession.completed = false;
       TMPSession.tasks = {};
     };
 
@@ -64,7 +63,6 @@
     var finishWorkSession = function finishWorkSession() {
       // console.log('finishWorkSession'); //DEBUG
       // mark the session as complete to confirm that the record was captured correctly
-      TMPSession.completed = true;
       TMPSession.completed_at = getUnixTimestamp();
       // push the work session into the sessions array
       sessions.push(TMPSession);
