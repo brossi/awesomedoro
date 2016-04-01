@@ -20,7 +20,7 @@
         <input ng-model="item.title" ng-change="todos.$save(item)" aria-label="todo name"/>
         <input ng-model="item.desc" ng-change="todos.$save(item)" aria-label="todo description"/>
         <br />
-        {{ item.created_at }} | {{ item.priority }} | {{ item.status }} | {{ item.due_date }}
+        {{ item.created_at * 1000 | formatDateTime }} | {{ item.priority }} | {{ item.status }} | {{ item.due_date }}
         <button ng-click="todos.$remove(item)">-</button>
         <br />
         <br />

@@ -1,5 +1,5 @@
 (function() {
-  var TaskCtrl = function TaskCtrl($scope, $firebaseArray) { 
+  var TaskCtrl = function TaskCtrl($scope, $firebaseArray, $filter) { 
 
     var getUnixTimestamp = function getUnixTimestamp() {
       // generate a unix epoch timestamp (in seconds)
@@ -16,7 +16,7 @@
         title: $scope.newTodoTitle,
         desc: $scope.newTodoDesc || 'description goes here',
         created_at: getUnixTimestamp(),
-        priority: $scope.newTodoPriority.name || 'urgent',
+        priority: $scope.newTodoPriority.name || 'Urgent',
         due_date: $scope.newTodoDueDate || null,
         status: 'planned'
       });
@@ -33,5 +33,5 @@
 
   angular
     .module('aDoro')
-    .controller('TaskCtrl', ['$scope', '$firebaseArray', TaskCtrl]);
+    .controller('TaskCtrl', ['$scope', '$firebaseArray', '$filter', TaskCtrl]);
 })();
