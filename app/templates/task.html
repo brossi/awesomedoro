@@ -1,15 +1,30 @@
 <div data-ng-controller="TaskCtrl as task">
-  <form ng-submit="addMessage()">
-    <input ng-model="newMessageText" />
-    <button type="submit">Add Message</button>
-  </form>
+  <div>
+    <p>I want to...</p>
+    <input ng-model="newTodoTitle" style="width: 75%; margin-bottom: 5px;">
+    <button aria-label="Add todo" ng-click="addTodo()">+</button>
+    <br />
+    <input ng-model="newTodoDesc" style="width: 75%;">
+    <br />
+    <select ng-model="newTodoPriority" ng-options="priority.name for priority in priorities">
+      <option value="">-- priority --</option>
+    </select>
+    <button>Due date</button>
+    <br />
+    <br />
+  </div>
+  <hr />
   <md-list>
-    <md-list-item class="md-2-line" ng-repeat="message in messages">
-    <md-checkbox aria-label="task completed?"></md-checkbox>
-    <div class="md-list-item-text">
-      <input ng-model="message.text" ng-change="messages.$save(message)" aria-label="task name"/>
-      <button ng-click="messages.$remove(message)">Delete Message</button>
-    </div>
-  </md-list-item>
+    <md-list-item class="md-1-line" ng-repeat="item in todos">
+      <div class="md-list-item-text">
+        <input ng-model="item.title" ng-change="todos.$save(item)" aria-label="todo name"/>
+        <input ng-model="item.desc" ng-change="todos.$save(item)" aria-label="todo description"/>
+        <br />
+        {{ item.created_at }} | {{ item.priority }} | {{ item.status }} | {{ item.due_date }}
+        <button ng-click="todos.$remove(item)">-</button>
+        <br />
+        <br />
+      </div>
+    </md-list-item>
   </md-list>
 </div>
