@@ -11,8 +11,8 @@
       var minutes = Math.floor(wholeSeconds / 60);
       var remainingSeconds = wholeSeconds % 60;
 
-      if (minutes === 0) {
-        minutes += '0';
+      if (minutes < 10) {
+        minutes = '0' + minutes;
       }
       var output = minutes + ':';
 

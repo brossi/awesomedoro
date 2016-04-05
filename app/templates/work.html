@@ -1,0 +1,8 @@
+  <div data-ng-controller="WorkCtrl as work" ng-init="initializeWork()">
+    
+    <session-timer duration="{{ duration }}" type="{{ timerType }}" pause="{{ showPause }}">
+    </session-timer>
+
+    <div style="width: 200px">{{ sessions }}</div>
+    
+  </div>

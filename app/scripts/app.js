@@ -11,6 +11,14 @@
         url: '/',
         templateUrl: '/templates/home.html'
       })
+      .state('work', {
+        url: '/work',
+        templateUrl: '/templates/work.html'
+      })
+      .state('task', {
+        url: '/task',
+        templateUrl: '/templates/task.html'
+      })
   };
   
   angular
