@@ -23,7 +23,7 @@
 
     $scope.initializeWork = function initializeWork() {
       //$scope.duration = appConstants.WORK_SESSION;
-      $scope.duration = .1; //DEBUG
+      $scope.duration = .2; //DEBUG
       $scope.timerType = 'work';
       $scope.showPause = true;
     };

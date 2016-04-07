@@ -1,0 +1,5 @@
+<ul>
+  <li data-ng-repeat="item in data" data-ng-show="item.showInList">
+    {{ item.title }} | {{ item.priority }} | <button ng-click="data.$remove(item)">-</button>
+  </li>
+</ul>

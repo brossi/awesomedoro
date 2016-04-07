@@ -3,6 +3,9 @@
 
     var TMPSessionTasks = [];
     $scope.$parent.sessions.data = [];
+    $scope.working = {
+      on: false
+    }
     $scope.break = {
       on: false
     }
@@ -17,6 +20,7 @@
     $scope.todos = $firebaseArray(ref);
     // add new items to the array
     // the message is automatically added to our Firebase database!
+
     $scope.addTodo = function() {
       $scope.todos.$add({
         title: $scope.newTodoTitle,
@@ -27,7 +31,7 @@
         status: 'planned'
       });
       // clean up the original submission form
-      $scope.newTodoTitle = null;
+      $scope.newTodoTitle = null; 
     };
 
     $scope.priorities = [
@@ -46,9 +50,6 @@
       console.log('WorkSessionRecorded');
       $scope.$parent.sessions.data.tasks = TMPSessionTasks;
       console.log($scope.$parent.sessions.data);
-
-      //$scope.$parent.sessions.data.tasks.push(TMPSessionTasks);
-      //$scope.$parent.sessions.data.tasks = TMPSessionTasks;
     };
 
     var preventWorkDuringBreak = function preventWorkDuringBreak() {
@@ -57,8 +58,8 @@
     };
 
     var enableWorkAfterBreak = function enableWorkAfterBreak() {
+      // counter operation for re-enabling the ability to start/complete tasks during a sessions
       $scope.break.on = false;
-      console.log('breakEnded');
     };
 
     $scope.startTimer = function ($scope, $element, $attributes) {
@@ -67,24 +68,29 @@
         $timeout(function() {
           // trigger click on timer start button
           angular.element(document.querySelector('#timerStartBtn')).triggerHandler('click');
-          // set new scope state to change the button on the task that triggered it
-          $element.startBtn = false;
-          $element.completeBtn = true;
-          var taskStarted = {id: $element.$id, completed: false};
-          TMPSessionTasks.push(taskStarted);
-          console.log(taskStarted);
         }, 100);
       } else {
         console.log('timer is already running');
       }
+      // set new scope state to change the button on the task that triggered it
+      $element.startBtn = false;
+      $element.completeBtn = true;
+      var taskStarted = {id: $element.$id, started_at: getUnixTimestamp()};
+      TMPSessionTasks.push(taskStarted);
     };
 
     $scope.markComplete = function(item) {
-      console.log(item.$id);
+      var selectedTaskID = item.$id;
+      var todoCount = TMPSessionTasks.length;
+      for (i = 0; i < todoCount; i++) { 
+        if (TMPSessionTasks[i]['id'] === selectedTaskID) {
+          TMPSessionTasks[i]['completed_at'] = getUnixTimestamp();
+        }
+      }
     };
 
     $rootScope.$on('WorkSessionRecorded', sendTaskUpdates);
-    $rootScope.$on('TIMER_STARTED:break', preventWorkDuringBreak);
+    $rootScope.$on('TIMER_FINISHED:work', preventWorkDuringBreak);
     $rootScope.$on('TIMER_FINISHED:break', enableWorkAfterBreak);
 
   };

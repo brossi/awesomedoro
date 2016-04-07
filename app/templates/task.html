@@ -4,29 +4,10 @@
     <input ng-model="newTodoTitle" style="width: 75%; margin-bottom: 5px;">
     <button aria-label="Add todo" ng-click="addTodo()">+</button>
     <br />
-    <input ng-model="newTodoDesc" style="width: 75%;">
-    <br />
     <select ng-model="newTodoPriority" ng-options="priority.name for priority in priorities"></select>
-    <button>Due date</button>
     <br />
     <br />
   </div>
   <hr />
-  <md-list>
-    <md-list-item class="md-1-line" ng-repeat="item in todos">
-      <div class="md-list-item-text">
-        <input ng-model="item.title" ng-change="todos.$save(item)" aria-label="todo name"/>
-        <input ng-model="item.desc" ng-change="todos.$save(item)" aria-label="todo description"/>
-        <br />
-        {{ item.created_at * 1000 | formatDateTime }} | {{ item.priority }} | {{ item.status }} | {{ item.due_date }}
-        <br />
-        {{break.on}}
-        <button ng-init="item.startBtn = true" ng-click="startTimer($event, item)" ng-show="item.startBtn" ng-disabled="break.on">Start work</button>
-        <button ng-init="item.completeBtn = false" ng-show="item.completeBtn" ng-click="markComplete(item)">Complete</button>
-        <button ng-click="todos.$remove(item)">Remove</button>
-        <br />
-        <br />
-      </div>
-    </md-list-item>
-  </md-list>
+  <todo-list data="todos | showTodos:'archived'"></todo-list>
 </div>
