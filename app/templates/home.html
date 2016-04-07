@@ -10,7 +10,7 @@
 </md-toolbar>
 
 <div flex layout="row" data-ng-controller="HomeCtrl as home">
-  
+  {{ isTimerRunning.data }}
   <md-content flex="50" layout-padding>
     <ng-include src="'/templates/task.html'"></ng-include>
   </md-content>

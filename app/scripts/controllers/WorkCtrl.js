@@ -1,7 +1,9 @@
 (function() {
   var WorkCtrl = function WorkCtrl($rootScope, $scope, appConstants) {
 
-    var sessions = [];
+    $scope.$parent.sessions.data = [];
+    var isTimerRunning = $scope.$parent.isTimerRunning;
+    console.log(isTimerRunning);
     var TMPSession, sessionPauseCount, sessionPauseLength, totalPauseLength;
     var workCompleted = 0;
     var eventStart, eventEnd;
@@ -21,13 +23,15 @@
 
     $scope.initializeWork = function initializeWork() {
       //$scope.duration = appConstants.WORK_SESSION;
-      $scope.duration = .2; //DEBUG
+      $scope.duration = .1; //DEBUG
       $scope.timerType = 'work';
       $scope.showPause = true;
     };
 
     var beginWorkSession = function beginWorkSession() {
       // console.log('beginWorkSession'); //DEBUG
+      // report up to the parent controller of the state change
+      $scope.$parent.isTimerRunning.data = true;
       // ensure we're starting from a clean session state
       cleanTMPSession();
       // capture the work session in a temporary object that we'll clear
@@ -35,7 +39,6 @@
       TMPSession.started_at = getUnixTimestamp();
       TMPSession.pause_count = 0;
       TMPSession.total_pause_length = 0;
-      TMPSession.tasks = {};
     };
 
     var startSessionPause = function startSessionPause() {
@@ -65,12 +68,16 @@
       // mark the session as complete to confirm that the record was captured correctly
       TMPSession.completed_at = getUnixTimestamp();
       // push the work session into the sessions array
-      sessions.push(TMPSession);
-      $scope.sessions = sessions; //DEBUG
+      $scope.$parent.sessions.data.push(TMPSession);
+      // $scope.sessions = sessions; //DEBUG
+      // broadcast to the rest of the app that the new session object is ready for processing
+      $rootScope.$emit('WorkSessionRecorded');
       // increment the global counter
       workCompleted++;
       // clean up the temporary session object and globals
       cleanTMPSession();
+      // report up to the parent controller of the state change
+      $scope.$parent.isTimerRunning.data = false;
       // set up for the next session, a break
       initializeBreak();
     };

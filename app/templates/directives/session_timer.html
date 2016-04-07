@@ -2,7 +2,7 @@
   <h2 class="md-display-3">{{ Countdown | timecode }}</h2>
   <p>{{ TimerType }}</p>
 
-  <input type="button" value="Start" ng-click="StartTimer()" ng-show="btnVisible" />
+  <input type="button" id="timerStartBtn" value="Start" ng-click="StartTimer()" ng-show="btnVisible" />
   <input type="button" value="Pause" ng-click="StartPauseTimer()" ng-show="timerRunning" />
   <input type="button" value="Resume" ng-click="ResumePreviousTimer()" ng-show="pauseTimerRunning" />
   <input type="button" value="Reset" ng-click="ResetTimer()" ng-show="!btnVisible && !pauseTimerRunning" />

@@ -1,9 +1,15 @@
 (function() {
-  var HomeCtrl = function HomeCtrl() {
-    
+  var HomeCtrl = function HomeCtrl($scope) {
+    $scope.sessions = {
+      data: []
+    };
+    // capture state of timer
+    $scope.isTimerRunning = {
+      data: false
+    };
   };
   
   angular
     .module('aDoro')
-    .controller('HomeCtrl', HomeCtrl);
+    .controller('HomeCtrl', ['$scope', HomeCtrl]);
 })();
