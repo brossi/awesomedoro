@@ -1,22 +1,44 @@
 <div data-ng-controller="TaskCtrl as task">
   <div>
     <p>I want to...</p>
-    <input ng-model="newTodoTitle" id="todoInput" style="width: 75%; margin-bottom: 5px;">
-    <button aria-label="Add todo" ng-click="addTodo()">+</button>
+    <input data-ng-model="newTodoTitle" id="todoInput" style="width: 75%; margin-bottom: 5px;">
+    <button aria-label="Add todo" data-ng-click="addTodo()">+</button>
     <br />
-    <select ng-model="newTodoPriority" ng-options="priority.name for priority in priorities"></select>
+    <select data-ng-model="newTodoPriority" data-ng-options="priority.name for priority in priorities"></select>
     <br />
     <br />
   </div>
   <hr />
-  <button>Recent</button>
-  <button>Archived</button>
-  <input ng-model="search">
-  <ul>
-    <li data-ng-repeat="item in todos | filter:search" 
-        ng-show="isRecentTodo(item)"
-        style="clear: both;">
-      {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item)" style="float: right;">-</button>
-    </li>
-  </ul>
+  <button
+    data-ng-init="recentTodos = true"
+    data-ng-disabled="recentTodos"
+    data-ng-click="recentTodos = !recentTodos; archivedTodos = false">
+    Recent
+  </button>
+  <button 
+    data-ng-disabled="archivedTodos"
+    data-ng-click="archivedTodos = !archivedTodos; recentTodos = false">
+    Archived
+  </button>
+  <input data-ng-model="search">
+  <div data-ng-show="recentTodos">
+    <h3>Recent Todos</h3>
+    <ul>
+      <li data-ng-repeat="item in todos | filter:search" 
+          data-ng-show="isRecentTodo(item)"
+          style="clear: both;">
+        {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item)" style="float: right;">-</button>
+      </li>
+    </ul>
+  </div>
+  <div data-ng-show="archivedTodos">
+    <h3>Archived Todos</h3>
+    <ul>
+      <li data-ng-repeat="item in todos | filter:search" 
+          data-ng-show="isArchivedTodo(item)"
+          style="clear: both;">
+        {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item)" style="float: right;">-</button>
+      </li>
+    </ul>
+  </div>
 </div>

@@ -32,7 +32,7 @@
           // it shouldn't be, but all previou attempts to work around it have been unsuccessful
           $timeout(function() {
             $rootScope.safeApply();
-          }, 500);
+          }, 1000);
         });
       // clean up the original submission form
         $scope.newTodoTitle = null; 
@@ -43,21 +43,41 @@
       { name: 'Urgent' }
     ];
 
-    var withinRange = function withinRange(item) {
+    var withinRange = function withinRange(item, show) {
       var currentTime = getUnixTimestamp();
-      var latest = currentTime;
-      var earliest = currentTime - 1200;
+      var latest, earliest;
       var val = item['created_at'];
+      var range = show || 'all';
+      switch(range) {
+        case 'recent':
+            // show todos newer than one hour (in seconds)
+            latest = currentTime;
+            earliest = currentTime - 300; //DEBUG
+            break;
+        case 'archived':
+            // show todos older than one hour (in seconds)
+            latest = currentTime - 300; //DEBUG
+            earliest = 0;
+            break;
+        case 'all':
+        default:
+            latest = currentTime;
+            earliest = 0;
+      }
       if (val < latest && val > earliest) {
         return true;
-      }  else {
+      } 
+      else {
         return false;
       }
     };
 
     $scope.isRecentTodo = function isRecentTodo(item) {
-      return withinRange(item);
+      return withinRange(item, 'recent');
     };
+    $scope.isArchivedTodo = function isArchivedTodo(item) {
+      return withinRange(item, 'archived');
+    }
 
     $scope.newTodoPriority = $scope.priorities[0];
 
