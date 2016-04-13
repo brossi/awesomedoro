@@ -1,7 +1,7 @@
 <div data-ng-controller="TaskCtrl as task">
   <div>
     <p>I want to...</p>
-    <input ng-model="newTodoTitle" style="width: 75%; margin-bottom: 5px;">
+    <input ng-model="newTodoTitle" id="todoInput" style="width: 75%; margin-bottom: 5px;">
     <button aria-label="Add todo" ng-click="addTodo()">+</button>
     <br />
     <select ng-model="newTodoPriority" ng-options="priority.name for priority in priorities"></select>
@@ -9,5 +9,14 @@
     <br />
   </div>
   <hr />
-  <todo-list data="todos | showTodos:'archived'"></todo-list>
+  <button>Recent</button>
+  <button>Archived</button>
+  <input ng-model="search">
+  <ul>
+    <li data-ng-repeat="item in todos | filter:search" 
+        ng-show="isRecentTodo(item)"
+        style="clear: both;">
+      {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item)" style="float: right;">-</button>
+    </li>
+  </ul>
 </div>

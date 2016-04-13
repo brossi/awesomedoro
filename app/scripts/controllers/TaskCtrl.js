@@ -22,22 +22,42 @@
     // the message is automatically added to our Firebase database!
 
     $scope.addTodo = function() {
-      $scope.todos.$add({
-        title: $scope.newTodoTitle,
-        desc: $scope.newTodoDesc || 'description goes here',
-        created_at: getUnixTimestamp(),
-        priority: $scope.newTodoPriority.name || 'Urgent',
-        due_date: $scope.newTodoDueDate || null,
-        status: 'planned'
-      });
+        $scope.todos.$add({
+          title: $scope.newTodoTitle,
+          created_at: getUnixTimestamp(),
+          priority: $scope.newTodoPriority.name || 'urgent',
+          status: 'planned'
+        }).then(function(response) {
+          // this is needed to update the DOM correctly after a new record is added; 
+          // it shouldn't be, but all previou attempts to work around it have been unsuccessful
+          $timeout(function() {
+            $rootScope.safeApply();
+          }, 500);
+        });
       // clean up the original submission form
-      $scope.newTodoTitle = null; 
+        $scope.newTodoTitle = null; 
     };
 
     $scope.priorities = [
       { name: 'Important' },
       { name: 'Urgent' }
     ];
+
+    var withinRange = function withinRange(item) {
+      var currentTime = getUnixTimestamp();
+      var latest = currentTime;
+      var earliest = currentTime - 1200;
+      var val = item['created_at'];
+      if (val < latest && val > earliest) {
+        return true;
+      }  else {
+        return false;
+      }
+    };
+
+    $scope.isRecentTodo = function isRecentTodo(item) {
+      return withinRange(item);
+    };
 
     $scope.newTodoPriority = $scope.priorities[0];
 
