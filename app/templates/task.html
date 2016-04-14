@@ -2,11 +2,9 @@
   <div>
     <p>I want to...</p>
     <input data-ng-model="newTodoTitle" id="todoInput" style="width: 75%; margin-bottom: 5px;">
-    <button aria-label="Add todo" data-ng-click="addTodo()">+</button>
+    <button aria-label="Add todo" data-ng-click="addTodo(); getStatusCount()">+</button>
     <br />
-    <select data-ng-model="newTodoPriority" data-ng-options="priority.name for priority in priorities"></select>
-    <br />
-    <br />
+    <!--<select data-ng-model="newTodoPriority" data-ng-options="priority.name for priority in priorities"></select>-->
   </div>
   <hr />
   <button
@@ -25,8 +23,7 @@
     data-ng-click="completedTodos = !completedTodos; recentTodos = false; expiredTodos = false; getStatusCount()">
     Completed ({{ completedCount }})
   </button>
-  <br />
-  Search<input data-ng-model="search">
+  <!--Search<input data-ng-model="search">-->
   <div data-ng-show="recentTodos">
     <h3>Recent Todos</h3>
     <ul>
@@ -34,7 +31,7 @@
           data-ng-show="showTodosFor(item, 'active')"
           style="clear: both;">
         <button data-ng-click="markComplete(item); getStatusCount()">Complete</button>
-        {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item); getStatusCount()" style="float: right;">-</button>
+        {{ item.title }} <button ng-click="todos.$remove(item); getStatusCount()" style="float: right;">-</button>
       </li>
     </ul>
   </div>
