@@ -42,6 +42,8 @@
       // timer durations (in minutes)
       WORK_SESSION: 25,
       BREAK_SESSION: 5,
-      LONG_BREAK_SESSION: 30
+      LONG_BREAK_SESSION: 30,
+      // expire todos after certain amount of time (in seconds for debugging)
+      EXPIRE_AFTER: 100
     });
 })();

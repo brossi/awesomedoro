@@ -10,41 +10,42 @@
   </div>
   <hr />
   <button
-    data-ng-init="recentTodos = true"
+    data-ng-init="recentTodos = true;"
     data-ng-disabled="recentTodos"
-    data-ng-click="recentTodos = !recentTodos; archivedTodos = false; completedTodos = false">
-    Recent
+    data-ng-click="recentTodos = !recentTodos; expiredTodos = false; completedTodos = false; getStatusCount()">
+    Recent ({{ activeCount }})
   </button>
   <button 
-    data-ng-disabled="archivedTodos"
-    data-ng-click="archivedTodos = !archivedTodos; recentTodos = false; completedTodos = false">
-    Archived
+    data-ng-disabled="expiredTodos"
+    data-ng-click="expiredTodos = !expiredTodos; recentTodos = false; completedTodos = false; getStatusCount()">
+    Expired ({{ expiredCount }})
   </button>
   <button 
     data-ng-disabled="completedTodos"
-    data-ng-click="completedTodos = !completedTodos; recentTodos = false; archivedTodos = false">
-    Completed
+    data-ng-click="completedTodos = !completedTodos; recentTodos = false; expiredTodos = false; getStatusCount()">
+    Completed ({{ completedCount }})
   </button>
   <br />
-  <input data-ng-model="search">
+  Search<input data-ng-model="search">
   <div data-ng-show="recentTodos">
     <h3>Recent Todos</h3>
     <ul>
       <li data-ng-repeat="item in todos | filter:search" 
-          data-ng-show="todos.length > 0 && isRecentTodo(item)"
+          data-ng-show="showTodosFor(item, 'active')"
           style="clear: both;">
-        <button data-ng-click="markComplete(item)">Complete</button>
-        {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item)" style="float: right;">-</button>
+        <button data-ng-click="markComplete(item); getStatusCount()">Complete</button>
+        {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item); getStatusCount()" style="float: right;">-</button>
       </li>
     </ul>
   </div>
-  <div data-ng-show="archivedTodos">
-    <h3>Archived Todos</h3>
+  <div data-ng-show="expiredTodos">
+    <h3>Expired Todos</h3>
     <ul>
       <li data-ng-repeat="item in todos | filter:search" 
-          data-ng-show="isArchivedTodo(item)"
+          data-ng-show="showTodosFor(item, 'expired')"
           style="clear: both;">
-        {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item)" style="float: right;">-</button>
+        <button data-ng-click="reActivateTodo(item); getStatusCount()">Reactivate</button>
+        {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item); getStatusCount()" style="float: right;">-</button>
       </li>
     </ul>
   </div>
@@ -52,10 +53,10 @@
     <h3>Completed Todos</h3>
     <ul>
       <li data-ng-repeat="item in todos | filter:search" 
-          data-ng-show="isCompletedTodo(item)"
+          data-ng-show="showTodosFor(item, 'completed')"
           style="clear: both;">
-        <button data-ng-click="reActivateTodo(item)">Reactivate</button>
-        {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item)" style="float: right;">-</button>
+        <button data-ng-click="unCompleteTodo(item); getStatusCount()">Uncomplete</button>
+        {{ item.title }} | {{ item.priority }} <button ng-click="todos.$remove(item); getStatusCount()" style="float: right;">-</button>
       </li>
     </ul>
   </div>

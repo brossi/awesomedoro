@@ -7,6 +7,7 @@
     $scope.isTimerRunning = {
       data: false
     };
+
   };
   
   angular

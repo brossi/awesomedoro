@@ -1,14 +1,10 @@
 (function() {
-  var TaskCtrl = function TaskCtrl($rootScope, $scope, $firebaseArray, $filter, $timeout) { 
+  var TaskCtrl = function TaskCtrl($rootScope, $scope, $firebaseArray, $filter, $timeout, appConstants) { 
 
     var TMPSessionTasks = [];
     $scope.$parent.sessions.data = [];
-    $scope.working = {
-      on: false
-    }
-    $scope.break = {
-      on: false
-    }
+    $scope.working = {on: false};
+    $scope.break = {on: false};
 
     var getUnixTimestamp = function getUnixTimestamp() {
       // generate a unix epoch timestamp (in seconds)
@@ -21,12 +17,35 @@
     // add new items to the array
     // the message is automatically added to our Firebase database!
 
+    $scope.getStatusCount = function getStatusCount() {
+      $scope.todos.$loaded(function(data) {
+        var length = data.length;
+        var active = 0;
+        var expired = 0;
+        var completed = 0;
+        for (var i=0; i < length; i++) {
+          var status = data[i]['status'];
+          if (status === 'active') {
+            active++;
+          } else if (status === 'expired') {
+            expired++;
+          } else if (status === 'completed') {
+            completed++;
+          }
+        }
+        $scope.activeCount = active || 0;
+        $scope.expiredCount = expired || 0;
+        $scope.completedCount = completed || 0;
+      });
+    };
+    $scope.getStatusCount();
+
     $scope.addTodo = function addTodo() {
         $scope.todos.$add({
           title: $scope.newTodoTitle,
           created_at: getUnixTimestamp(),
           priority: $scope.newTodoPriority.name || 'urgent',
-          status: 'planned',
+          status: 'active',
           completed_at: null
         }).then(function(response) {
           // this is needed to update the DOM correctly after a new record is added; 
@@ -45,55 +64,28 @@
     ];
     $scope.newTodoPriority = $scope.priorities[0];
 
-    var withinRange = function withinRange(item, show) {
+    // method to check creation timestamp on todos and modulate the status
+    $scope.processTodos = function processTodos(item) {
       var currentTime = getUnixTimestamp();
-      var latest, earliest;
-      var val = item['created_at'];
-      var range = show || 'all';
-      switch(range) {
-        case 'recent':
-            // show todos newer than one hour (in seconds)
-            latest = currentTime;
-            earliest = currentTime - 300; //DEBUG
-            break;
-        case 'archived':
-            // show todos older than one hour (in seconds)
-            latest = currentTime - 300; //DEBUG
-            earliest = 0;
-            break;
-        case 'all':
-        default:
-            latest = currentTime;
-            earliest = 0;
+      var created = item['created_at'];
+      var expired = currentTime - appConstants.EXPIRE_AFTER; //DEBUG
+      // first check to see if the item is already completed, if it is,
+      // leave the status as-is
+      if (status !== 'completed') {
+        // for todos that are older than the current expiration cutoff, set status
+        if (created <= expired) {
+          // change status
+          item['status'] = 'expired';
+        }
+        // otherwise, leave the status alone
       }
-      if (val < latest && val > earliest) {
-        return true;
-      } 
-      else {
-        return false;
-      }
+      $scope.todos.$save(item);
     };
 
-    var checkTodoStatus = function checkTodoStatus(item) {
-      var todoStatus = item['status'];
-      return todoStatus;
-    };
-
-    $scope.isRecentTodo = function isRecentTodo(item) {
-      if (checkTodoStatus(item) === 'planned') {
-        return withinRange(item, 'recent');
-      }
-    };
-
-    $scope.isArchivedTodo = function isArchivedTodo(item) {
-      if (checkTodoStatus(item) === 'planned') {
-        return withinRange(item, 'archived');
-      }
-    };
-
-    $scope.isCompletedTodo = function isCompletedTodo(item) {
-      if (checkTodoStatus(item) === 'completed') {
-        return withinRange(item, 'all');
+    $scope.showTodosFor = function showTodosFor(item, status) {
+      $scope.processTodos(item);
+      if (item['status'] === status) {
+        return item;
       }
     };
 
@@ -103,9 +95,9 @@
     };
 
     var sendTaskUpdates = function sendTaskUpdates(){
-      console.log('WorkSessionRecorded');
+      //console.log('WorkSessionRecorded');
       $scope.$parent.sessions.data.tasks = TMPSessionTasks;
-      console.log($scope.$parent.sessions.data);
+      //console.log($scope.$parent.sessions.data);
     };
 
     var preventWorkDuringBreak = function preventWorkDuringBreak() {
@@ -126,7 +118,7 @@
           angular.element(document.querySelector('#timerStartBtn')).triggerHandler('click');
         }, 100);
       } else {
-        console.log('timer is already running');
+        //console.log('timer is already running');
       }
       // set new scope state to change the button on the task that triggered it
       $element.startBtn = false;
@@ -140,6 +132,7 @@
       item['completed_at'] = getUnixTimestamp();
       // set status
       item['status'] = 'completed';
+      $scope.todos.$save(item);
 
       // var todoCount = TMPSessionTasks.length;
       // for (i = 0; i < todoCount; i++) { 
@@ -151,10 +144,26 @@
     };
 
     $scope.reActivateTodo = function reActivateTodo(item) {
+      item['status'] = 'active';
+      item['created_at'] = getUnixTimestamp();
+      $scope.todos.$save(item);
+    };
+
+    $scope.unCompleteTodo = function unCompleteTodo(item) {
+      var currentTime = getUnixTimestamp();
+      var created = item['created_at'];
+      var expired = currentTime - appConstants.EXPIRE_AFTER; //DEBUG
+      
+      // reset to correct status
+      if (created <= expired) {
+        item['status'] = 'expired';
+      } else {
+        item['status'] = 'active';
+      }
       // unset the completion time
       item['completed_at'] = null;
-      // set status
-      item['status'] = 'planned';
+      $scope.todos.$save(item);
+
     }
 
     $rootScope.$on('WorkSessionRecorded', sendTaskUpdates);
@@ -165,5 +174,5 @@
 
   angular
     .module('aDoro')
-    .controller('TaskCtrl', ['$rootScope', '$scope', '$firebaseArray', '$filter', '$timeout', TaskCtrl]);
+    .controller('TaskCtrl', ['$rootScope', '$scope', '$firebaseArray', '$filter', '$timeout', 'appConstants', TaskCtrl]);
 })();

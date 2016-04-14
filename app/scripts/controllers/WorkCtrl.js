@@ -3,7 +3,6 @@
 
     $scope.$parent.sessions.data = [];
     var isTimerRunning = $scope.$parent.isTimerRunning;
-    console.log(isTimerRunning);
     var TMPSession, sessionPauseCount, sessionPauseLength, totalPauseLength;
     var workCompleted = 0;
     var eventStart, eventEnd;
